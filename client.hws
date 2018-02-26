@@ -1,0 +1,55 @@
+/****************************************************************
+**                                                             **
+** Name:        ScreamerNet3 Client                            **
+** Author:      Dimitris Panokostas                            **
+** Version:     1.0 beta                                       **
+** Date:        17.07.16                                       **
+** Interpreter: Hollywood 6.1                                  **
+**                                                             **
+** History:                                                    **
+**                                                             **
+** - initial release                                           **
+**                                                             **
+****************************************************************/
+Const #DEBUG = False
+Const #SETTINGS = "settings.ini"
+
+; Make sure we have Hollywood 6.1!
+@VERSION 6,1
+
+; This script requires the RapaGUI plugin
+@REQUIRE "RapaGUI"
+
+/*
+** Information about this app
+*/
+@APPTITLE "ScreamerNet3 Client"
+@APPVERSION "$VER: ScreamerNet3 Client 1.0 (10.07.16)"
+@APPCOPYRIGHT "(C) Copyright 2016 by Dimitris Panokostas"
+@APPAUTHOR "Dimitris Panokostas"
+@APPDESCRIPTION "The client component for ScreamerNet3 renderfarm network"
+
+; The client GUI definition
+@FILE 1, "clientUI.xml"
+
+; Include the business logic library
+@INCLUDE "clientlib.hws"
+@INCLUDE "common.hws"
+
+@DISPLAY {title="ScreamerNet3 Client"}
+
+; dynamically create GUI from an external *.xml file definition
+Local gui = ""
+While Not Eof(1) Do gui = gui .. ReadLine(1)
+moai.CreateApp(gui)
+
+InstallEventHandler({RapaGUI = p_EventFunc, OnReceiveData = p_ReceiveData})
+
+p_SetUIState("disconnected")
+
+clients = {}
+nick$ = moai.Get("Nick", "Text")
+
+Repeat
+   WaitEvent()
+Forever

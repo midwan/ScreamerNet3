@@ -1,0 +1,54 @@
+; Connect to the specified Server and Port number
+Function p_ConnectToServer(server$, port$)
+	If server$ = "" Then server$ = "127.0.0.1"
+	If port$ = "" Then port$ = 2550
+	p_Log("Attempting to connect to server " .. server$ .. ", port " .. port$ .. "...")
+	; Open a connection and get the Id in a variable
+	connectionId = OpenConnection(Nil, server$, port$)
+	p_Log("Connected!")
+	; Add connectionId to list of active Connections
+	p_AddConnection(connectionId)
+	; Change UI state
+	p_SetUIState("connected")
+	; temporary, this should check if the nick is in use on the server already
+	nick$ = moai.Get("Nick", "Text")
+EndFunction
+
+; Disconnect from the currently connected Server
+Function p_DisconnectFromServer()
+	CloseConnection(connectionId)
+	p_RemoveConnection(connectionId)
+	p_SetUIState("disconnected")
+EndFunction
+
+; Handle received data from a connected client
+Function p_ReceiveData(msg)
+	Local data$ = ReceiveData(msg.id, #RECEIVELINE)
+	p_Log("Message received: " .. data$)
+	p_WriteToTextView("textviewMessages", data$)
+EndFunction
+
+; Disable or enable UI elements based on current state
+Function p_SetUIState(state$)
+	If state$ = "connected"
+		moai.Set("CmdDir", "disabled", True)
+		moai.Set("ProjectsDir", "disabled", True)
+		moai.Set("txtServer", "disabled", True)
+		moai.Set("txtPort", "disabled", True)
+		moai.Set("connect","disabled", True)
+		moai.Set("Nick", "disabled", True)
+		moai.Set("AltNick", "disabled", True)
+		moai.Set("disconnect","disabled", False)
+		
+	ElseIf state$ = "disconnected"
+		moai.Set("CmdDir", "disabled", False)
+		moai.Set("ProjectsDir", "disabled", False)
+		moai.Set("txtServer", "disabled", False)
+		moai.Set("txtPort", "disabled", False)
+		moai.Set("connect","disabled", False)
+		moai.Set("Nick", "disabled", False)
+		moai.Set("AltNick", "disabled", False)
+		moai.Set("disconnect","disabled", True)
+		
+	EndIf
+EndFunction

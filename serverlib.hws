@@ -1,0 +1,73 @@
+; Start a new server instance
+Function p_StartServer(port$)
+	If port$ = "" Then port$ = 2550
+	p_Log("Starting Server on port " .. port$)
+	; Create a new Server instance with ID=1
+	CreateServer(1, port$)
+	p_Log("Server started, now waiting for connections.")
+	; Set UI state
+	p_SetUIState("started")
+	nick$ = moai.Get("Nick", "Text")
+EndFunction
+
+; Stop the running server instance
+Function p_StopServer()
+	; TODO: Need to close all client connections first!
+	p_Log("Stopping server...")
+	; Close Server with ID=1
+	CloseServer(1)
+	p_Log("Server stopped.")
+	p_SetUIState("stopped")
+EndFunction
+
+; Handle a new client connection
+Function p_ClientConnected(msg)
+	p_AddConnection(msg.clientId)
+	p_Log("A client connected! Client IP: " .. GetConnectionIP(msg.clientid))
+	p_SendMessage("Client " .. GetConnectionIP(msg.clientid) .. " is now connected!")
+EndFunction
+
+; Handle a client disconnection
+Function p_ClientDisconnected(msg)
+	p_RemoveConnection(msg.Id)
+	p_Log("A client disconnected! Client IP was: " .. GetConnectionIP(msg.id))
+	p_SendMessage("Client " .. GetConnectionIP(msg.id) .. " is now disconnecting!")
+	CloseConnection(msg.Id)
+EndFunction
+
+; Handle received data from a connected client
+Function p_ReceiveData(msg)
+	Local data$ = ReceiveData(msg.id, #RECEIVELINE)
+	p_Log("Message received: " .. data$)
+	p_WriteToTextView("textviewMessages", data$)
+	Local index, clientId = NextItem(clients)
+	; Broadcast the message to all other clients
+	While GetType(index) <> #NIL And clientId <> msg.id
+		p_Log("Broadcasting message to " .. GetConnectionIP(clientId))
+		p_SendData(index, clientId, data$ .. "\r\n")
+		index, clientId = NextItem(clients, index)
+	Wend
+EndFunction
+
+; Disable and enable UI elements according to current state
+Function p_SetUIState(state$)
+	If state$ = "started"
+		moai.Set("CmdDir", "disabled", True)
+		moai.Set("ProjectsDir", "disabled", True)
+		moai.Set("txtPort", "disabled", True)
+		moai.Set("start", "disabled", True)
+		moai.Set("Nick", "disabled", True)
+		moai.Set("AltNick", "disabled", True)
+		moai.Set("stop", "disabled", False)
+		
+	ElseIf state$ = "stopped"
+		moai.Set("CmdDir", "disabled", False)
+		moai.Set("ProjectsDir", "disabled", False)
+		moai.Set("txtPort", "disabled", False)
+		moai.Set("start", "disabled", False)
+		moai.Set("Nick", "disabled", False)
+		moai.Set("AltNick", "disabled", False)
+		moai.Set("stop", "disabled", True)
+		
+	EndIf
+EndFunction

@@ -1,0 +1,115 @@
+; Appends a message to the specified TextView
+Function p_WriteToTextView(textView$, message$)
+	Local currentMessages$ = moai.Get(textView$, "Text")
+	If currentMessages$ = ""
+		currentMessages$ = message$
+	Else
+		currentMessages$ = currentMessages$ .. "\r\n" .. message$
+	EndIf
+	moai.Set(textView$, "Text", currentMessages$)
+EndFunction
+
+Function p_Log(text$)
+	moai.DoMethod("log", "insert", "bottom", GetTime(True) .. ": " .. text$)
+	moai.DoMethod("log", "jump", "bottom")
+EndFunction
+
+; Send a message to all clients
+Function p_SendMessage(message$)
+	p_Log("Sending message: " .. message$)
+	message$ = nick$ .. ": " .. message$
+	p_WriteToTextView("textviewMessages", message$)
+	ForEach(clients, p_SendData, message$ .. "\r\n")
+EndFunction
+
+; Send a message to a connected client
+Function p_SendData(index, clientId, message$)
+	SendData(clientId, message$)
+EndFunction
+
+; Add a new connection to the clients Table
+Function p_AddConnection(clientId)
+	If Not HaveItem(clients, clientId)
+		InsertItem(clients, clientId)
+	EndIf
+EndFunction
+
+; Remove a connection from the clients table
+Function p_RemoveConnection(clientId)
+	If HaveItem(clients, clientId)
+		RemoveItem(clients, clientId)
+	EndIf
+EndFunction
+
+; Handle RapaGUI events
+Function p_EventFunc(msg)
+	Switch msg.action
+	Case "RapaGUI"
+		Switch msg.attribute
+			
+			Case "Pressed":
+				If #DEBUG Then DebugPrint("Received Button Pressed Event")
+				p_GUIEvent(msg.id)
+				
+			Case "Selected":
+				If #DEBUG Then DebugPrint("Received Menu Selected Event")
+				p_GUIEvent(UnrightStr(msg.id, 3))
+				
+			Case "File":
+				p_Log("LWSN is found at: " .. msg.triggervalue)
+				
+			Case "Path":
+				Switch msg.id
+					Case "CmdDir":
+						p_Log("Cmd Dir: " .. msg.triggervalue)
+						
+					Case "ProjectsDir":
+						p_Log("Projects Path: " .. msg.triggervalue)
+						
+				EndSwitch
+			
+			Case "CloseRequest":
+				moai.Set(msg.id, "open", False)
+	
+		EndSwitch
+	EndSwitch
+EndFunction
+
+; Handle GUI events
+Function p_GUIEvent(id)
+	Switch id
+		Case "start":
+			Local port = Moai.Get("txtPort", "Text")
+			p_StartServer(port)
+			
+		Case "stop":
+			p_StopServer()
+		
+		Case "connect":
+			Local server = Moai.Get("txtServer", "Text")
+			Local port = Moai.Get("txtPort", "Text")
+			p_ConnectToServer(server, port)
+			
+		Case "disconnect":
+			p_DisconnectFromServer()
+		
+		Case "send":
+			Local message$ = Moai.Get("txtMessage", "Text")
+			;Local receiver = Moai.Get("listClients", "active")
+			p_SendMessage(message$)
+			Moai.Set("txtMessage", "Text", "")
+		
+		Case "settings":
+			moai.Set("settings", "open", True)
+		
+		Case "about":
+			moai.Request("ScreamerNet3", "ScreamerNet3 (C) by Dimitris Panokostas\n" ..
+																	"A tool for managing nodes in a Lightwave\n" ..
+																	"ScreamerNet render farm.\n", "OK")
+		
+		Case "quit":
+			;Send terminate msg to all clients
+			;Close Server
+			End		
+	EndSwitch
+EndFunction

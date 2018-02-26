@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<application id="app">
+	
+	<menubar id="menu">
+		<menu title="_File">
+			<item id="mn_connect" shortcut="Ctrl-O">C_onnect</item>
+			<item id="mn_disconnect" shortcut="Ctrl-D">_Disconnect</item>
+			<item/>
+			<item id="mn_quit" shortcut="Ctrl-Q">_Quit</item>
+		</menu>
+		
+		<menu title="Settings">
+			<item id="mn_settings" shortcut="Ctrl-O">_Edit Settings...</item>
+		</menu>
+		
+		<menu title="Help">
+			<item id="mn_about" shortcut="Shift-F1">_About...</item>
+		</menu>
+	</menubar>
+	
+	<window parent="main" id="settings" title="Settings" notify="closerequest" toolwindow="true" open="false">
+		<vgroup>
+			
+			<pageview>
+				<hgroup title="Network Settings">
+					<vgroup>
+						<colgroup columns="4">
+							<Label>Nickname:</Label>
+							<TextEntry id="Nick">Client</TextEntry>
+							<Label>Alt. Nickname:</Label>
+							<TextEntry id="AltNick">[Client]</TextEntry>
+							
+							<Label>Server:</Label>
+							<TextEntry id="txtServer"></TextEntry>
+							<Label>Port:</Label>
+							<TextEntry id="txtPort">2550</TextEntry>
+						</colgroup>
+					</vgroup>
+				</hgroup>
+				<hgroup title="Lightwave Settings">
+					<vgroup>
+						<colgroup columns="2">
+							<label>LWSN executable:</label>
+							<popfile title="Please select the LWSN executable..." notify="file"/>
+							
+							<label>Command Dir:</label>
+							<poppath id="CmdDir" title="Please select the Command directory..." notify="Path"/>
+							
+							<label>Projects Dir:</label>
+							<poppath id="ProjectsDir" title="Please select the Projects directory..." notify="Path"/>
+						</colgroup>
+												
+					</vgroup>	
+				</hgroup>
+			</pageview>
+			
+		</vgroup>
+	</window>
+	
+	<window title="ScreamerNet3 Client" id="main" menubar="menu" width="480" height="240">
+		<vgroup>
+			<hgroup title="Server">
+				<button id="connect">Connect</button>
+				<button id="disconnect">Disconnect</button>
+			</hgroup>
+			
+			<pageview>
+				<hgroup title="Messages">						
+					<vgroup>
+						<TextView id="textviewMessages"></TextView>
+					
+						<ColGroup columns="2">	
+							<TextEntry id="txtMessage"></TextEntry>
+							<Button id="send">Send</Button>
+						</ColGroup>
+					</vgroup>
+				</hgroup>
+				
+				<hgroup title="Log">
+					<listview id="log">
+						<column/>
+					</listview>	
+				</hgroup>
+			</pageview>
+		</vgroup>
+	</window>
+</application>
