@@ -153,7 +153,7 @@ Function p_GUIEvent(id)
 		
 		Case "SaveSettings":
 			p_ApplySettings()
-			p_SaveSettings()
+			SavePrefs(prefs)
 			moai.Set("settings", "open", False)
 			
 		Case "Cancel":

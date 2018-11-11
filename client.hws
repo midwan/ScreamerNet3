@@ -16,6 +16,7 @@ Const #SETTINGS = "settings.ini"
 /*
 ** Information about this app
 */
+@APPIDENTIFIER "com.blitterstudio.screamernet3_client"
 @APPTITLE "ScreamerNet3 Client"
 @APPVERSION "$VER: ScreamerNet3 Client v1.0 (2018-11-11)"
 @APPCOPYRIGHT "(C) Copyright 2016-2018 Dimitris Panokostas"
@@ -40,14 +41,11 @@ InstallEventHandler({RapaGUI = p_EventFunc, OnReceiveData = p_ReceiveData})
 
 p_SetUIState("disconnected")
 
-If Exists("client_settings.ini") 
-	OpenFile(2, "client_settings.ini")
-	While Not Eof(2) Do p_ReadSettingsFile(ReadLine(2))
-	CloseFile(2)
-EndIf
+prefs = {server$ = "127.0.0.1", port$ = 2550, nick$ = "Client", lwsn$ = "", commandDir$ = ""}
+LoadPrefs(prefs)
+p_PrefsToGui()
 
 clients = {}
-nick$ = moai.Get("Nick", "Text")
 
 Repeat
    WaitEvent()

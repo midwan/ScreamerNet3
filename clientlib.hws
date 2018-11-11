@@ -1,17 +1,15 @@
 ; Connect to the specified Server and Port number
 Function p_ConnectToServer(server$, port$)
-	If server$ = "" Then server$ = "127.0.0.1"
-	If port$ = "" Then port$ = 2550
-	p_Log("Attempting to connect to server " .. server$ .. ", port " .. port$ .. "...")
+	If prefs.server$ = "" Then prefs.server$ = "127.0.0.1"
+	If prefs.port$ = "" Then prefs.port$ = 2550
+	p_Log("Attempting to connect to server " .. prefs.server$ .. ", port " .. prefs.port$ .. "...")
 	; Open a connection and get the Id in a variable
-	connectionId = OpenConnection(Nil, server$, port$)
+	connectionId = OpenConnection(Nil, prefs.server$, prefs.port$)
 	p_Log("Connected!")
 	; Add connectionId to list of active Connections
 	p_AddConnection(connectionId)
 	; Change UI state
 	p_SetUIState("connected")
-	; temporary, this should check if the nick is in use on the server already
-	nick$ = moai.Get("Nick", "Text")
 EndFunction
 
 ; Disconnect from the currently connected Server
@@ -54,38 +52,17 @@ Function p_SetUIState(state$)
 EndFunction
 
 Function p_ApplySettings()
-	server$ = moai.Get("txtServer", "Text")
-	port$ = moai.Get("txtPort", "Text")
-	nick$ = moai.Get("Nick", "Text")
-	lwsn$ = moai.Get("LWSN", "File")
-	commandDir$ = moai.Get("CmdDir", "Path")
+	prefs.server$ = moai.Get("txtServer", "Text")
+	prefs.port$ = moai.Get("txtPort", "Text")
+	prefs.nick$ = moai.Get("Nick", "Text")
+	prefs.lwsn$ = moai.Get("LWSN", "File")
+	prefs.commandDir$ = moai.Get("CmdDir", "Path")
 EndFunction
 
-Function p_ReadSettingsFile(settingsLine$)
-	If StartsWith(settingsLine$, "Server=")
-		server$ = UnrightStr(settingsLine$, 7)
-		moai.Set("txtServer", "Text", server$)
-	ElseIf StartsWith(settingsLine$, "Port=")
-		port$ = UnrightStr(settingsLine$, 5)
-		moai.Set("txtPort", "Text",port$)
-	ElseIf StartsWith(settingsLine$, "Nickname=")
-		nick$ = UnrightStr(settingsLine$, 9)
-		moai.Set("Nick", "Text",nick$)
-	ElseIf StartsWith(settingsLine$, "LWSN=")
-		lwsn$ = UnrightStr(settingsLine$, 5)
-		moai.Set("LWSN", "File", lwsn$)
-	ElseIf StartsWith(settingsLine$, "CommandDir=")
-		commandDir$ = UnrightStr(settingsLine$, 11)
-		moai.Set("CmdDir", "Path", commandDir$)
-	EndIf
-EndFunction
-
-Function p_SaveSettings()
-	OpenFile(2, "client_settings.ini", #MODE_WRITE)
-	WriteLine(2, "Server=" .. server$)
-	WriteLine(2, "Port=" .. port$)
-	WriteLine(2, "Nickname=" .. nick$)
-	WriteLine(2, "LWSN=" .. lwsn$)
-	WriteLine(2, "CommandDir=" .. commandDir$)
-	CloseFile(2)
+Function p_PrefsToGui()
+	moai.Set("txtServer", "Text", prefs.server$)
+	moai.Set("txtPort", "Text", prefs.port$)
+	moai.Set("Nick", "Text", prefs.nick$)
+	moai.Set("LWSN", "File", prefs.lwsn$)
+	moai.Set("CmdDir", "Path", prefs.commandDir$)
 EndFunction

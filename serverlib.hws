@@ -1,13 +1,11 @@
 ; Start a new server instance
 Function p_StartServer(port$)
-	If port$ = "" Then port$ = 2550
-	p_Log("Starting Server on port " .. port$)
+	If prefs.port$ = "" Then prefs.port$ = 2550
+	p_Log("Starting Server on port " .. prefs.port$)
 	; Create a new Server instance with ID=1
-	CreateServer(1, port$)
+	CreateServer(1, prefs.port$)
 	p_Log("Server started, now waiting for connections.")
-	; Set UI state
 	p_SetUIState("started")
-	nick$ = moai.Get("Nick", "Text")
 EndFunction
 
 ; Send Disconnect Command to client
@@ -100,33 +98,15 @@ Function p_SetUIState(state$)
 EndFunction
 
 Function p_ApplySettings()
-	port$ = moai.Get("txtPort", "Text")
-	nick$ = moai.Get("Nick", "Text")
-	lwsn$ = moai.Get("LWSN", "File")
-	commandDir$ = moai.Get("CmdDir", "Path")
+	prefs.port$ = moai.Get("txtPort", "Text")
+	prefs.nick$ = moai.Get("Nick", "Text")
+	prefs.lwsn$ = moai.Get("LWSN", "File")
+	prefs.commandDir$ = moai.Get("CmdDir", "Path")
 EndFunction
 
-Function p_ReadSettingsFile(settingsLine$)
-	If StartsWith(settingsLine$, "Port=")
-		port$ = UnrightStr(settingsLine$, 5)
-		moai.Set("txtPort", "Text", port$)
-	ElseIf StartsWith(settingsLine$, "Nickname=")
-		nick$ = UnrightStr(settingsLine$, 9)
-		moai.Set("Nick", "Text", nick$)
-	ElseIf StartsWith(settingsLine$, "LWSN=")
-		lwsn$ = UnrightStr(settingsLine$, 5)
-		moai.Set("LWSN", "File", lwsn$)
-	ElseIf StartsWith(settingsLine$, "CommandDir=")
-		commandDir$ = UnrightStr(settingsLine$, 11)
-		moai.Set("CmdDir", "Path", commandDir$)
-	EndIf
-EndFunction
-
-Function p_SaveSettings()
-	OpenFile(2, "server_settings.ini", #MODE_WRITE)
-	WriteLine(2, "Port=" .. port$)
-	WriteLine(2, "Nickname=" .. nick$)
-	WriteLine(2, "LWSN=" .. lwsn$)
-	WriteLine(2, "CommandDir=" .. commandDir$)
-	CloseFile(2)
+Function p_PrefsToGui()
+	moai.Set("txtPort", "Text", prefs.port$)
+	moai.Set("Nick", "Text", prefs.nick$)
+	moai.Set("LWSN", "File", prefs.lwsn$)
+	moai.Set("CmdDir", "Path", prefs.commandDir$)
 EndFunction

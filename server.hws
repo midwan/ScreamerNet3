@@ -16,6 +16,7 @@ Const #SETTINGS = "settings.ini"
 /*
 ** Information about this app
 */
+@APPIDENTIFIER "com.blitterstudio.screamernet3_server"
 @APPTITLE "ScreamerNet3 Server"
 @APPVERSION "$VER: ScreamerNet3 Server v1.0 (2018-11-11)"
 @APPCOPYRIGHT "(C) Copyright 2016-2018 Dimitris Panokostas"
@@ -44,14 +45,11 @@ InstallEventHandler({
 
 p_SetUIState("stopped")
 
-If Exists("server_settings.ini") 
-	OpenFile(2, "server_settings.ini")
-	While Not Eof(2) Do p_ReadSettingsFile(ReadLine(2))
-	CloseFile(2)
-EndIf
+prefs = {port$ = 2550, nick$ = "Server", lwsn$ = "", commandDir$ = ""}
+LoadPrefs(prefs)
+p_PrefsToGui()
 
 clients = {}
-nick$ = moai.Get("Nick", "Text")
 
 Repeat
   WaitEvent()
