@@ -1,4 +1,4 @@
-; Appends a message to the specified TextView
+﻿; Appends a message to the specified TextView
 Function p_WriteToTextView(textView$, message$)
 	Local currentMessages$ = moai.Get(textView$, "Text")
 	If currentMessages$ = ""
@@ -50,11 +50,15 @@ Function p_EventFunc(msg)
 			Case "Pressed":
 				If #DEBUG Then DebugPrint("Received Button Pressed Event")
 				p_GUIEvent(msg.id)
+			
+			Case "Acknowledge":
+				If #DEBUG Then DebugPrint("Received Textentry.Acknowledge event")
+				p_GUIEvent(msg.id)
 				
 			Case "Selected":
 				If #DEBUG Then DebugPrint("Received Menu Selected Event")
 				p_GUIEvent(UnrightStr(msg.id, 3))
-				
+					
 			Case "File":
 				p_Log("LWSN is found at: " .. msg.triggervalue)
 				
@@ -79,33 +83,38 @@ EndFunction
 Function p_GUIEvent(id)
 	Switch id
 		Case "start":
-			Local port = Moai.Get("txtPort", "Text")
+			Local port = moai.Get("txtPort", "Text")
 			p_StartServer(port)
 			
 		Case "stop":
 			p_StopServer()
 		
 		Case "connect":
-			Local server = Moai.Get("txtServer", "Text")
-			Local port = Moai.Get("txtPort", "Text")
+			Local server = moai.Get("txtServer", "Text")
+			Local port = moai.Get("txtPort", "Text")
 			p_ConnectToServer(server, port)
 			
 		Case "disconnect":
 			p_DisconnectFromServer()
 		
+		Case "txtMessage":
+			Local message$ = moai.Get("txtMessage", "Text")
+			p_SendMessage(message$)
+			moai.Set("txtMessage", "Text", "")
+			
 		Case "send":
-			Local message$ = Moai.Get("txtMessage", "Text")
+			Local message$ = moai.Get("txtMessage", "Text")
 			;Local receiver = Moai.Get("listClients", "active")
 			p_SendMessage(message$)
-			Moai.Set("txtMessage", "Text", "")
+			moai.Set("txtMessage", "Text", "")
 		
 		Case "settings":
 			moai.Set("settings", "open", True)
 		
 		Case "about":
-			moai.Request("ScreamerNet3", "ScreamerNet3 (C) by Dimitris Panokostas\n" ..
-																	"A tool for managing nodes in a Lightwave\n" ..
-																	"ScreamerNet render farm.\n", "OK")
+			moai.Request("ScreamerNet3", "ScreamerNet3 (c) by Dimitris Panokostas\r\r\n" ..
+					"A tool for managing nodes in a Lightwave\n" ..
+					"ScreamerNet render farm.\n", "OK")
 		
 		Case "quit":
 			;Send terminate msg to all clients
