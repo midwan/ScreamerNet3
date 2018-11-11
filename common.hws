@@ -148,7 +148,8 @@ Function p_GUIEvent(id)
 			moai.Set("txtMessage", "Text", "")
 		
 		Case "settings":
-			moai.Set("settings", "open", True)
+			moai.Set("settings", "Open", True)
+			moai.Set("settings", "Activate", True)
 		
 		Case "SaveSettings":
 			p_ApplySettings()
