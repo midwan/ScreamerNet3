@@ -10,14 +10,39 @@ Function p_StartServer(port$)
 	nick$ = moai.Get("Nick", "Text")
 EndFunction
 
+; Send Disconnect Command to client
+Function p_SendDisconnectCommand(index, clientId)
+	p_SendMessage("/DISCONNECT")
+EndFunction
+
+; Disconnect a client from the server
+Function p_CloseClientConnection(index, clientId)
+	p_RemoveConnection(clientId)
+	CloseConnection(clientId)
+EndFunction
+
 ; Stop the running server instance
 Function p_StopServer()
-	; TODO: Need to close all client connections first!
-	p_Log("Stopping server...")
+	; Disconnect all clients
+	p_Log("Disconnecting all clients...")
+	ForEach(clients, p_SendDisconnectCommand)
+	ForEach(clients, p_CloseClientConnection)
 	; Close Server with ID=1
 	CloseServer(1)
 	p_Log("Server stopped.")
 	p_SetUIState("stopped")
+EndFunction
+
+; Build a comma separated string of connected Clients
+Function p_ClientsToString(index, clientId)
+	listOfClients = listOfClients .. "," .. GetConnectionIP(clientId)
+EndFunction
+
+; Broadcast the list of connected clients
+Function p_BroadcastListOfClients()
+	listOfClients = "/CLIENTS "
+	ForEach(clients, p_ClientsToString)
+	p_SendMessage(listOfClients)
 EndFunction
 
 ; Handle a new client connection
@@ -25,6 +50,7 @@ Function p_ClientConnected(msg)
 	p_AddConnection(msg.clientId)
 	p_Log("A client connected! Client IP: " .. GetConnectionIP(msg.clientid))
 	p_SendMessage("Client " .. GetConnectionIP(msg.clientid) .. " is now connected!")
+	p_BroadcastListOfClients()
 EndFunction
 
 ; Handle a client disconnection
@@ -32,6 +58,7 @@ Function p_ClientDisconnected(msg)
 	p_RemoveConnection(msg.Id)
 	p_Log("A client disconnected! Client IP was: " .. GetConnectionIP(msg.id))
 	p_SendMessage("Client " .. GetConnectionIP(msg.id) .. " is now disconnecting!")
+	p_BroadcastListOfClients()
 	CloseConnection(msg.Id)
 EndFunction
 
@@ -39,7 +66,7 @@ EndFunction
 Function p_ReceiveData(msg)
 	Local data$ = ReceiveData(msg.id, #RECEIVELINE)
 	p_Log("Message received: " .. data$)
-	p_WriteToTextView("textviewMessages", data$)
+	p_ProcessMessagesByType(data$)
 	Local index, clientId = NextItem(clients)
 	; Broadcast the message to all other clients
 	While GetType(index) <> #NIL And clientId <> msg.id

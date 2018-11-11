@@ -9,6 +9,26 @@ Function p_WriteToTextView(textView$, message$)
 	moai.Set(textView$, "Text", currentMessages$)
 EndFunction
 
+; Intercept special types of messages
+Function p_ProcessMessagesByType(message$)
+	If #DEBUG Then DebugPrint("p_ProcessMessagesByType(): Detecting message type for:", message$)
+	If StartsWith(message$, "Server: /CLIENTS ") 
+		If #DEBUG Then DebugPrint("p_ProcessMessagesByType(): New Client list received")
+		
+	ElseIf StartsWith(message$, "Server: /COMMAND ") 
+		If #DEBUG Then DebugPrint("p_ProcessMessagesByType(): New command received")
+	ElseIf StartsWith(message$, "Server: /NICKS ") 
+		If #DEBUG Then DebugPrint("p_ProcessMessagesByType(): New list of Nicks received")
+	ElseIf StartsWith(message$, "Server: /DISCONNECT")
+		p_Log("Received Disconnect command from server")
+		p_WriteToTextView("textviewMessages", "Server was stopped, all clients disconnected!")
+		p_DisconnectFromServer()
+	Else
+		If #DEBUG Then DebugPrint("p_ProcessMessagesByType(): Simple text, broadcasting to TextView...")
+		p_WriteToTextView("textviewMessages", message$)
+	EndIf
+EndFunction
+
 Function p_Log(text$)
 	moai.DoMethod("log", "insert", "bottom", GetTime(True) .. ": " .. text$)
 	moai.DoMethod("log", "jump", "bottom")
@@ -17,8 +37,8 @@ EndFunction
 ; Send a message to all clients
 Function p_SendMessage(message$)
 	p_Log("Sending message: " .. message$)
-	message$ = nick$ .. ": " .. message$
 	p_WriteToTextView("textviewMessages", message$)
+	message$ = nick$ .. ": " .. message$
 	ForEach(clients, p_SendData, message$ .. "\r\n")
 EndFunction
 
@@ -27,18 +47,37 @@ Function p_SendData(index, clientId, message$)
 	SendData(clientId, message$)
 EndFunction
 
+; Insert a Client in Listview
+Function p_InsertClientInListview(index, clientId)
+	moai.DoMethod("lv_clients", "Insert", index, GetConnectionIP(clientId))
+EndFunction
+
+; Update the Clients listview
+Function p_UpdateClientsListview(clients)
+	moai.DoMethod("lv_clients", "Clear")
+	ForEach(clients, p_InsertClientInListview)
+EndFunction
+
 ; Add a new connection to the clients Table
 Function p_AddConnection(clientId)
 	If Not HaveItem(clients, clientId)
+		If #DEBUG Then DebugPrint("New Client connected: ", clientId)
 		InsertItem(clients, clientId)
+		p_UpdateClientsListview(clients)
 	EndIf
 EndFunction
 
+Function p_LocateClientIndex(index, Id)
+	If Id = clientIdToRemove Then RemoveItem(clients, index)
+EndFunction
+
 ; Remove a connection from the clients table
-Function p_RemoveConnection(clientId)
-	If HaveItem(clients, clientId)
-		RemoveItem(clients, clientId)
-	EndIf
+Function p_RemoveConnection(Id)
+	If #DEBUG Then DebugPrint("Client disconnected: ", Id)
+	clientIdToRemove = Id
+	ForEach(clients, p_LocateClientIndex)
+	p_UpdateClientsListview(clients)
+	clientIdToRemove = Nil
 EndFunction
 
 ; Handle RapaGUI events
@@ -117,8 +156,11 @@ Function p_GUIEvent(id)
 					"ScreamerNet render farm.\n", "OK")
 		
 		Case "quit":
-			;Send terminate msg to all clients
-			;Close Server
-			End		
+			p_DisconnectFromServer()
+			End
+		
+		Case "quitServer":
+			p_StopServer()
+			End
 	EndSwitch
 EndFunction

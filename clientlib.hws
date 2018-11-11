@@ -25,7 +25,7 @@ EndFunction
 Function p_ReceiveData(msg)
 	Local data$ = ReceiveData(msg.id, #RECEIVELINE)
 	p_Log("Message received: " .. data$)
-	p_WriteToTextView("textviewMessages", data$)
+	p_ProcessMessagesByType(data$)
 EndFunction
 
 ; Disable or enable UI elements based on current state
