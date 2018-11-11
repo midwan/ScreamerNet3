@@ -1,4 +1,4 @@
-/****************************************************************
+﻿/****************************************************************
 **                                                             **
 ** Name:        ScreamerNet3 Client                            **
 ** Author:      Dimitris Panokostas                            **
@@ -18,7 +18,7 @@ Const #SETTINGS = "settings.ini"
 @VERSION 6,1
 
 ; This script requires the RapaGUI plugin
-@REQUIRE "RapaGUI"
+@REQUIRE "RapaGUI", {Link = True}
 
 /*
 ** Information about this app
