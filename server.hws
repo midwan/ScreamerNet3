@@ -2,20 +2,13 @@
 **                                                             **
 ** Name:        ScreamerNet3 Server                            **
 ** Author:      Dimitris Panokostas                            **
-** Version:     1.0 beta                                       **
-** Date:        17.07.16                                       **
-** Interpreter: Hollywood 6.1                                  **
-**                                                             **
-** History:                                                    **
-**                                                             **
-** - initial release                                           **
 **                                                             **
 ****************************************************************/
 Const #DEBUG = False
 Const #SETTINGS = "settings.ini"
 
-; Make sure we have Hollywood 6.1!
-@VERSION 6,1
+; Make sure we have Hollywood 7.1!
+@VERSION 7,1
 
 ; This script requires the RapaGUI plugin
 @REQUIRE "RapaGUI", {Link = True}
@@ -24,8 +17,8 @@ Const #SETTINGS = "settings.ini"
 ** Information about this app
 */
 @APPTITLE "ScreamerNet3 Server"
-@APPVERSION "$VER: ScreamerNet3 Server 1.0 (10.07.16)"
-@APPCOPYRIGHT "(C) Copyright 2016 by Dimitris Panokostas"
+@APPVERSION "$VER: ScreamerNet3 Server v1.0 (2018-11-11)"
+@APPCOPYRIGHT "(C) Copyright 2016-2018 Dimitris Panokostas"
 @APPAUTHOR "Dimitris Panokostas"
 @APPDESCRIPTION "The Server component for the ScreamerNet3 renderfarm network"
 

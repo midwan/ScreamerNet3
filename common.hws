@@ -160,9 +160,11 @@ Function p_GUIEvent(id)
 			moai.Set("settings", "open", False)
 			
 		Case "about":
-			moai.Request("ScreamerNet3", "ScreamerNet3 (c) by Dimitris Panokostas\r\r\n" ..
-					"A tool for managing nodes in a Lightwave\n" ..
-					"ScreamerNet render farm.\n", "OK")
+			Local info = GetApplicationInfo()
+			moai.Request(info.Title, 
+					info.Version .. "\r\n" ..
+					info.Copyright .. "\r\r\n" ..
+					info.Description .. "\n", "OK")
 		
 		Case "quit":
 			p_DisconnectFromServer()
