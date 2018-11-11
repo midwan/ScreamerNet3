@@ -67,10 +67,13 @@
 			<pageview>
 				<hgroup title="Messages">						
 					<vgroup>
-						<TextView id="textviewMessages"></TextView>
-					
-						<ColGroup columns="2">	
-							<TextEntry id="txtMessage"></TextEntry>
+						<ColGroup columns="2">
+							<TextView id="textviewMessages"></TextView>
+							<Listview id="lv_clients" width="50">
+								<column/>
+							</Listview>
+							
+							<TextEntry id="txtMessage" notify="acknowledge"></TextEntry>
 							<Button id="send">Send</Button>
 						</ColGroup>
 					</vgroup>
