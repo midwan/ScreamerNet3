@@ -6,7 +6,7 @@
 			<item id="mn_start" shortcut="Ctrl-R">Sta_rt Server</item>
 			<item id="mn_stop" shortcut="Ctrl-P">Sto_p Server</item>
 			<item/>
-			<item id="mn_quit" shortcut="Ctrl-Q">_Quit</item>
+			<item id="mn_quitServer" shortcut="Ctrl-Q">_Quit</item>
 		</menu>
 		
 		<menu title="Settings">
@@ -57,7 +57,7 @@
 		</vgroup>
 	</window>
 	
-	<window title="ScreamerNet3 Server" id="main" menubar="menu" width="480" height="240">
+	<window title="ScreamerNet3 Server" id="main" menubar="menu" width="480" height="256">
 		<vgroup>
 			<hgroup title="Server">
 				<button id="start">Start Server</button>

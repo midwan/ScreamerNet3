@@ -57,7 +57,7 @@
 		</vgroup>
 	</window>
 	
-	<window title="ScreamerNet3 Client" id="main" menubar="menu" width="480" height="240">
+	<window title="ScreamerNet3 Client" id="main" menubar="menu" width="480" height="256">
 		<vgroup>
 			<hgroup title="Server">
 				<button id="connect">Connect</button>
