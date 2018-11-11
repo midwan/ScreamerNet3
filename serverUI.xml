@@ -41,7 +41,7 @@
 					<vgroup>
 						<colgroup columns="2">
 							<label>LWSN executable:</label>
-							<popfile title="Please select the LWSN executable..." notify="file"/>
+							<popfile id="LWSN" title="Please select the LWSN executable..." notify="file"/>
 							
 							<label>Command Dir:</label>
 							<poppath id="CmdDir" title="Please select the Command directory..." notify="path"/>
@@ -53,7 +53,10 @@
 					</vgroup>
 				</hgroup>
 			</pageview>
-			
+			<colgroup columns="2">
+				<button id="SaveSettings">Save</button>
+				<button id="Cancel">Cancel</button>
+			</colgroup>
 		</vgroup>
 	</window>
 	

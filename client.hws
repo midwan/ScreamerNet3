@@ -47,6 +47,12 @@ InstallEventHandler({RapaGUI = p_EventFunc, OnReceiveData = p_ReceiveData})
 
 p_SetUIState("disconnected")
 
+If Exists("client_settings.ini") 
+	OpenFile(2, "client_settings.ini")
+	While Not Eof(2) Do p_ReadSettingsFile(ReadLine(2))
+	CloseFile(2)
+EndIf
+
 clients = {}
 nick$ = moai.Get("Nick", "Text")
 

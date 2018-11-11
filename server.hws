@@ -51,6 +51,12 @@ InstallEventHandler({
 
 p_SetUIState("stopped")
 
+If Exists("server_settings.ini") 
+	OpenFile(2, "server_settings.ini")
+	While Not Eof(2) Do p_ReadSettingsFile(ReadLine(2))
+	CloseFile(2)
+EndIf
+
 clients = {}
 nick$ = moai.Get("Nick", "Text")
 

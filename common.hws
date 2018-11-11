@@ -122,27 +122,27 @@ EndFunction
 Function p_GUIEvent(id)
 	Switch id
 		Case "start":
-			Local port = moai.Get("txtPort", "Text")
-			p_StartServer(port)
+			port$ = moai.Get("txtPort", "Text")
+			p_StartServer(port$)
 			
 		Case "stop":
 			p_StopServer()
 		
 		Case "connect":
-			Local server = moai.Get("txtServer", "Text")
-			Local port = moai.Get("txtPort", "Text")
-			p_ConnectToServer(server, port)
+			server$ = moai.Get("txtServer", "Text")
+			port$ = moai.Get("txtPort", "Text")
+			p_ConnectToServer(server$, port$)
 			
 		Case "disconnect":
 			p_DisconnectFromServer()
 		
 		Case "txtMessage":
-			Local message$ = moai.Get("txtMessage", "Text")
+			message$ = moai.Get("txtMessage", "Text")
 			p_SendMessage(message$)
 			moai.Set("txtMessage", "Text", "")
 			
 		Case "send":
-			Local message$ = moai.Get("txtMessage", "Text")
+			message$ = moai.Get("txtMessage", "Text")
 			;Local receiver = Moai.Get("listClients", "active")
 			p_SendMessage(message$)
 			moai.Set("txtMessage", "Text", "")
@@ -150,6 +150,14 @@ Function p_GUIEvent(id)
 		Case "settings":
 			moai.Set("settings", "open", True)
 		
+		Case "SaveSettings":
+			p_ApplySettings()
+			p_SaveSettings()
+			moai.Set("settings", "open", False)
+			
+		Case "Cancel":
+			moai.Set("settings", "open", False)
+			
 		Case "about":
 			moai.Request("ScreamerNet3", "ScreamerNet3 (c) by Dimitris Panokostas\r\r\n" ..
 					"A tool for managing nodes in a Lightwave\n" ..

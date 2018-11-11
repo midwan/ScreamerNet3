@@ -98,3 +98,35 @@ Function p_SetUIState(state$)
 		
 	EndIf
 EndFunction
+
+Function p_ApplySettings()
+	port$ = moai.Get("txtPort", "Text")
+	nick$ = moai.Get("Nick", "Text")
+	lwsn$ = moai.Get("LWSN", "File")
+	commandDir$ = moai.Get("CmdDir", "Path")
+EndFunction
+
+Function p_ReadSettingsFile(settingsLine$)
+	If StartsWith(settingsLine$, "Port=")
+		port$ = UnrightStr(settingsLine$, 5)
+		moai.Set("txtPort", "Text", port$)
+	ElseIf StartsWith(settingsLine$, "Nickname=")
+		nick$ = UnrightStr(settingsLine$, 9)
+		moai.Set("Nick", "Text", nick$)
+	ElseIf StartsWith(settingsLine$, "LWSN=")
+		lwsn$ = UnrightStr(settingsLine$, 5)
+		moai.Set("LWSN", "File", lwsn$)
+	ElseIf StartsWith(settingsLine$, "CommandDir=")
+		commandDir$ = UnrightStr(settingsLine$, 11)
+		moai.Set("CmdDir", "Path", commandDir$)
+	EndIf
+EndFunction
+
+Function p_SaveSettings()
+	OpenFile(2, "server_settings.ini", #MODE_WRITE)
+	WriteLine(2, "Port=" .. port$)
+	WriteLine(2, "Nickname=" .. nick$)
+	WriteLine(2, "LWSN=" .. lwsn$)
+	WriteLine(2, "CommandDir=" .. commandDir$)
+	CloseFile(2)
+EndFunction
